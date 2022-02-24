@@ -11,13 +11,12 @@ from Encryptor.InternalKey import dumpKeys, InternalKey, loadKeys
 from Encryptor.utils import fileGuard, clearWindow, pil_image_to_tkinter_image, to2DArray
 from images import TrashCanImg, LockImg, ArrowImg
 
-WINDOW = None
-page = 0
+page: int = 0
 KEY_CHOICE: IntVar = None
-KEYS = []
-win = None
-MAINFILE = ""
-USERKEY = ""
+KEYS: list[InternalKey] = []
+WINDOW: Tk = None
+MAINFILE: str = ""
+USERKEY: str = ""
 
 
 # ######################################################################################################################
@@ -82,7 +81,7 @@ def ExportKeyButton() -> None:
 
 
 def LoadKeyButton() -> None:
-    global KEYS, win, MAINFILE, USERKEY, KEY_CHOICE
+    global KEYS, WINDOW, MAINFILE, USERKEY, KEY_CHOICE
     file = askopenfilename()
     if file != '':
         try:
@@ -168,7 +167,7 @@ def ChangeAppPasswordButton() -> None:
     Entry(popup, textvariable=pass_in_two).grid(row=1, column=1, padx=10, pady=1)
 
     def change_app_pass_confirm(winIn, pass1, pass2):
-        global KEYS, win, MAINFILE, USERKEY, KEY_CHOICE
+        global KEYS, WINDOW, MAINFILE, USERKEY, KEY_CHOICE
         password_one = pass1.get()
         password_two = pass2.get()
         if pass1.get() == pass2.get():
@@ -234,7 +233,7 @@ def EditKeyButton() -> None:
         KEYS[key_edit_spot].name = newName
         KEYS[key_edit_spot].description = newDescription
         dumpKeys(MAINFILE, KEYS, USERKEY)
-        MainWindow(win)
+        MainWindow(WINDOW)
         popup.destroy()
 
     confirmButton = Button(popup, text="Confirm Changes",
@@ -262,8 +261,8 @@ def MainWindow(window) -> None:
 
 
 def reloadWindow() -> None:
-    global win
-    MainWindow(win)
+    global WINDOW
+    MainWindow(WINDOW)
 
 
 def displayOptions(frame, window) -> None:
@@ -298,7 +297,7 @@ def displayOptions(frame, window) -> None:
     b8.pack(fill="both", side=TOP, expand=True, padx=10, pady=3)
 
 
-def displayKeys(frame, KEYS) -> None:
+def displayKeys(frame, keys) -> None:
     global KEY_CHOICE
     global page
     background = frame["background"]
@@ -310,7 +309,7 @@ def displayKeys(frame, KEYS) -> None:
     descriptionHeader.grid(column=3, row=0)
     keyHeader = Label(frame, text="KEY", bg=background)
     keyHeader.grid(column=4, row=0)
-    InternalKeyRegister = to2DArray(KEYS, int(8))
+    InternalKeyRegister = to2DArray(keys, int(8))
     if page > (len(InternalKeyRegister) - 1):
         page = page % len(InternalKeyRegister)
 
@@ -345,7 +344,6 @@ def displayKeys(frame, KEYS) -> None:
     def changePage(amount):
         global page
         page = page + amount
-        global win
         reloadWindow()
 
     # Buttons to navigate the pages
@@ -365,10 +363,10 @@ def displayKeys(frame, KEYS) -> None:
 
 
 def entry_point(window, file, user_key, keys) -> None:
-    global KEYS, win, MAINFILE, USERKEY, KEY_CHOICE
+    global KEYS, WINDOW, MAINFILE, USERKEY, KEY_CHOICE
     KEY_CHOICE = IntVar()
     KEY_CHOICE.set(0)
-    win = window
+    WINDOW = window
     MAINFILE = file
     USERKEY = user_key
     KEYS = keys
