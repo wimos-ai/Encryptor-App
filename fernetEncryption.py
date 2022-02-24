@@ -12,7 +12,7 @@ class Encryptor:
     # cdef __defKey__ = b'LRpy6OLfl9lWweZX8Qm84_hrhX5_V5-OyqBm9Zf216M='
     # Returns Bytes Object
     @staticmethod
-    def create_key(password: bytes = None):
+    def create_key(password: str = None):
         if password is None:
             return Fernet.generate_key()
         else:
@@ -80,14 +80,24 @@ class Encryptor:
     def encrypt_file(file, key):
         with open(file, 'rb') as f:
             contents = f.read()
-        with open(file, 'wb') as f:
-            k = Fernet(key)
-            f.write(k.encrypt(contents))
+
+        if isinstance(key, bytes):
+            with open(file, 'wb') as f:
+                k = Fernet(key)
+                f.write(k.encrypt(contents))
+        else:
+            with open(file, 'wb') as f:
+                k = key
+                f.write(k.encrypt(contents))
 
     @staticmethod
     def decrypt_file(file, key):
         with open(file, 'rb') as f:
             contents = f.read()
-        with open(file, 'wb') as f:
+        if isinstance(key, bytes):
             k = Fernet(key)
-            f.write(k.decrypt(contents))
+        else:
+            k = key
+        dec = k.decrypt(contents) # Needs tmp variable otherwise function call returns none and that is what is written
+        with open(file, 'wb') as f:
+            f.write(dec)
