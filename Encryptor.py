@@ -5,7 +5,7 @@ from tkinter.filedialog import askopenfilename
 
 from cryptography.fernet import InvalidToken
 
-from Encryptor.fernetEncryption import Encryptor
+from fernetEncryption import Encryptor
 
 
 class InternalKey():
