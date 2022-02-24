@@ -98,5 +98,6 @@ class Encryptor:
             k = Fernet(key)
         else:
             k = key
+        dec = k.decrypt(contents) # Needs tmp variable otherwise function call returns none and that is what is written
         with open(file, 'wb') as f:
-            f.write(k.decrypt(contents))
+            f.write(dec)
