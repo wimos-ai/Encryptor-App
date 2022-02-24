@@ -1,5 +1,5 @@
 import tkinter.messagebox as mb
-from tkinter import Label, StringVar, Entry, Button
+from tkinter import Label, StringVar, Entry, Button, Tk
 
 from cryptography.fernet import InvalidToken
 
@@ -11,26 +11,22 @@ from images import LockImg
 from utils import centerWindow
 
 
-def login_screen(window):
+def login_screen(window: Tk) -> None:
     clearWindow(window)
     window.iconphoto(False, pil_image_to_tkinter_image(LockImg))
 
-    centerWindow(window)
     window.lift()
 
-    # tkWindow.geometry('400x150')
     window.title('Login')
     window.protocol("WM_DELETE_WINDOW", lambda: quitHandler(window))
 
     # username label and text entry box
     Label(window, text="User Name").grid(row=0, column=0, padx=10, pady=10)
-    global username
     username = StringVar(window)
     Entry(window, textvariable=username).grid(row=0, column=1, padx=1, pady=10)
 
     # password label and password entry box
     Label(window, text="Password").grid(row=1, column=0, padx=10, pady=1)
-    global password
     password = StringVar(window)
     Entry(window, textvariable=password, show='*').grid(row=1, column=1, padx=1, pady=1)
 
@@ -49,13 +45,12 @@ def login_screen(window):
     # New User Button
     Button(window, text='New User', command=lambda: new_login_screen(window)).grid(row=4, column=2, padx=10,
                                                                                    pady=10)
-
     centerWindow(window)
+
     window.mainloop()
 
 
-def new_login_screen(window):
-    # window.geometry('400x150')
+def new_login_screen(window: Tk) -> None:
     clearWindow(window)
     window.title('New User')
     window.protocol("WM_DELETE_WINDOW", lambda: quitHandler(window))
@@ -92,28 +87,35 @@ def new_login_screen(window):
     window.mainloop()
 
 
-def create_user(usernameIn, password_one_in, password_two_in, window):
-    p1 = password_one_in.get()
-    p2 = password_two_in.get()
+def create_user(usernameIn: StringVar, password_one_in: StringVar, password_two_in: StringVar, window: Tk) -> None:
+    password_one = password_one_in.get()
+    password_two = password_two_in.get()
     username = usernameIn.get()
-    if p1 == p2 and len(p1) > 3:
-        USERKEY = Encryptor.create_key(password=p1)
-        writeKey = InternalKey(USERKEY, "Password Key", "The Key Generated from your password")
+    if password_one == password_two and len(password_one) > 3:
+        user_key = Encryptor.create_key(password=password_one)
+        writeKey = InternalKey(user_key, "Password Key", "The Key Generated from your password")
         KEYS = [writeKey]
-        MAINFILE = username + '.db'
-        dumpKeys(MAINFILE, KEYS, USERKEY)
-        entry_point(window, MAINFILE, USERKEY, KEYS)
+        main_db_file = username + '.db'
+        dumpKeys(main_db_file, KEYS, user_key)
+        entry_point(window, main_db_file, user_key, KEYS)
+    elif password_one != password_two:
+        mb.showerror(title="New Account Error", message="Passwords do not match")
+
+    elif len(password_one) <= 3:
+        mb.showerror(title="New Account Error", message="Passwords must be four characters or more")
+
+    else:
+        mb.showerror(title="New Account Error", message="Generic Failure")
 
 
-def validate_login(username, Password, window):
-    password = Password.get()
-    username = username.get()
-
+def validate_login(user_name: StringVar, password: StringVar, window: Tk) -> None:
+    password = password.get()
+    user_name = user_name.get()
     try:
-        USERKEY = Encryptor.create_key(password=password)
-        MAINFILE = username + '.db'
-        KEYS = loadKeys(MAINFILE, USERKEY)
-        entry_point(window, MAINFILE, USERKEY, KEYS)
+        user_key = Encryptor.create_key(password=password)
+        main_file = user_name + '.db'
+        KEYS = loadKeys(main_file, user_key)
+        entry_point(window, main_file, user_key, KEYS)
     except FileNotFoundError:
         mb.showerror(title="Login Message", message="User not found")
     except InvalidToken:
