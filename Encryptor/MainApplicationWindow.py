@@ -313,6 +313,9 @@ def displayKeys(frame, keys) -> None:
     if page > (len(InternalKeyRegister) - 1):
         page = page % len(InternalKeyRegister)
 
+    if page < (len(InternalKeyRegister)):
+        page = page % len(InternalKeyRegister)
+
     for x in range(0, len(InternalKeyRegister[page])):
         index = (page * len(InternalKeyRegister[page])) + x
         try:

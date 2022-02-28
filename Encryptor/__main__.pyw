@@ -11,6 +11,7 @@ def main():
 
     # window
     tkWindow = Tk()
+    tkWindow.resizable(False, False)
     login_screen(tkWindow)
 
 
