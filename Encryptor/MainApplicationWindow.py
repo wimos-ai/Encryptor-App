@@ -6,10 +6,12 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename
 from PIL import ImageTk, ImageOps
 from cryptography.fernet import InvalidToken
 
-from Encryptor import Encryptor
-from Encryptor.InternalKey import dumpKeys, InternalKey, loadKeys
-from Encryptor.utils import fileGuard, clearWindow, pil_image_to_tkinter_image, to2DArray
-from images import TrashCanImg, LockImg, ArrowImg
+from ArrowIcon import ArrowImg
+from FernetEncryption import Encryptor
+from InternalKey import dumpKeys, InternalKey, loadKeys
+from TrashCanIcon import TrashCanImg
+from WindowIcon import LockImg
+from utils import fileGuard, clearWindow, pil_image_to_tkinter_image, to2DArray
 
 page: int = 0
 KEY_CHOICE: IntVar = None

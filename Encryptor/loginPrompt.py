@@ -3,12 +3,12 @@ from tkinter import Label, StringVar, Entry, Button, Tk
 
 from cryptography.fernet import InvalidToken
 
-from Encryptor import Encryptor
-from Encryptor.InternalKey import InternalKey, dumpKeys, loadKeys
-from Encryptor.utils import clearWindow, pil_image_to_tkinter_image, quitHandler
+from FernetEncryption import Encryptor
+from InternalKey import InternalKey, dumpKeys, loadKeys
 from MainApplicationWindow import entry_point
-from images import LockImg
+from WindowIcon import LockImg
 from utils import centerWindow
+from utils import clearWindow, pil_image_to_tkinter_image, quitHandler
 
 
 def login_screen(window: Tk) -> None:

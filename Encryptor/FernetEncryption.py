@@ -1,6 +1,3 @@
-# cython: language_level=3
-# cython: embedsignature = True
-
 import base64
 
 from cryptography.fernet import Fernet
@@ -9,8 +6,6 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
 class Encryptor:
-    # cdef __defKey__ = b'LRpy6OLfl9lWweZX8Qm84_hrhX5_V5-OyqBm9Zf216M='
-    # Returns Bytes Object
     @staticmethod
     def create_key(password: str = None):
         if password is None:
@@ -98,6 +93,6 @@ class Encryptor:
             k = Fernet(key)
         else:
             k = key
-        dec = k.decrypt(contents) # Needs tmp variable otherwise function call returns none and that is what is written
+        dec = k.decrypt(contents)  # Needs tmp variable otherwise function call returns none and that is what is written
         with open(file, 'wb') as f:
             f.write(dec)

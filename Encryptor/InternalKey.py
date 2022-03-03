@@ -1,6 +1,6 @@
 import pickle
 
-from fernetEncryption import Encryptor
+from FernetEncryption import Encryptor
 
 
 class InternalKey:
