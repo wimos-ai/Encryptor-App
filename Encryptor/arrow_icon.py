@@ -1,10 +1,12 @@
+"""This module contains the Arrow icon"""
 import io
+from typing import Final
 
-import PIL.Image
 from PIL import Image
 
 
-def __setup() -> PIL.Image.Image:
+def __setup() -> Image.Image:
+    """Loads the ArrowIcon from program memory and returns the result"""
     arrow_bytes = io.BytesIO(b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 '
                              b'\x08\x06\x00\x00\x00szz\xf4\x00\x00\x02{'
                              b'IDATx\x9c\xed\x96\xefK\x13q\x1c\xc7\xdf\xbb\xbbm\xe7\xdcv\xfb!nK\x98\xd8\xc4p$\xa2\xb4\x07\xae'
@@ -30,9 +32,7 @@ def __setup() -> PIL.Image.Image:
                              b'\xab\r\xf6\x9d\xf1{;\x9c\xa7\x90M\'\x1a\x0eW, %\x0f\x1e\xac-->N\xac\xad\xa0\xdd\xd4\xf9{'
                              b'\xc35\x10\xde,\x14]H\x9a\xc5\xb1^\xc9Z\xb4\xf8\xbf\xf9\x05\xdfe\x16\xc8\x8a\xef?\xbd\x00\x00'
                              b'\x00\x00IEND\xaeB`\x82 ')
-    im = Image.open(arrow_bytes)
-    im = im.convert("RGBA")
-    return im
+    return Image.open(arrow_bytes).convert("RGBA")
 
 
-ArrowImg: PIL.Image.Image = __setup()
+ARROW_IMG: Final[Image.Image] = __setup()

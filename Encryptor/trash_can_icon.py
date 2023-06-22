@@ -1,10 +1,9 @@
 import io
 
-import PIL.Image
 from PIL import Image
 
 
-def __setup() -> PIL.Image.Image:
+def __setup() -> Image.Image:
     trash_bytes = io.BytesIO(b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 '
                              b'\x08\x06\x00\x00\x00szz\xf4\x00\x00\x02\xf7IDATx\x9c\xedWKO\x13Q\x14\xfe\xee\xbd3m\xd3\x99R'
                              b'\xda\x00&\xc8s\xd1\x96\xad1R$\x135\x12\xe3J\x89\x0b\x16\xaeX\xb8cc4q\xcd\xca\xc4\x185\xba'
@@ -37,9 +36,7 @@ def __setup() -> PIL.Image.Image:
                              b'~\xae\x84=S\xc2\xf6v\x0b\xcb\xcb\xcfA&\x8e\x18V\x00 '
                              b'\x84\xf8\x8a\xa6\xa6\xfbb~\xfec\xa5\xc1/\xbaZ\xec\x17\x9a\x13\x08g\x00\x00\x00\x00IEND\xaeB'
                              b'`\x82 ')
-    im = Image.open(trash_bytes)
-    im = im.convert("RGBA")
-    return im
+    return Image.open(trash_bytes).convert("RGBA")
 
 
-TrashCanImg: PIL.Image.Image = __setup()
+TrashCanImg: Image.Image = __setup()
