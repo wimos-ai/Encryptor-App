@@ -10,7 +10,6 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 class Encryptor:
     """Exposes some convenient methods working with Fernet objects"""
 
-
     @staticmethod
     def create_key(password: str) -> Fernet:
         """Creates a Fernet key from password"""
