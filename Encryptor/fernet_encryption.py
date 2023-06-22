@@ -9,25 +9,32 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 class Encryptor:
     """Exposes some convenient methods working with Fernet objects"""
-    __kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3",
-        iterations=390000,
-    )
+
 
     @staticmethod
     def create_key(password: str) -> Fernet:
         """Creates a Fernet key from password"""
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3",
+            iterations=390000,
+        )
 
-        key = base64.urlsafe_b64encode(Encryptor.__kdf.derive(password.encode("UTF-8")))
+        key = base64.urlsafe_b64encode(kdf.derive(password.encode("UTF-8")))
         return Fernet(key)
 
     @staticmethod
     def create_random_key() -> Fernet:
         """Creates a random Fernet key"""
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3",
+            iterations=390000,
+        )
         bts = os.urandom(32)
-        key = base64.urlsafe_b64encode(Encryptor.__kdf.derive(bts))
+        key = base64.urlsafe_b64encode(kdf.derive(bts))
         return Fernet(key)
 
     @staticmethod
