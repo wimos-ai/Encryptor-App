@@ -1,4 +1,4 @@
-# cython: language_level=3
+"""Entry point of the program"""
 import platform
 from tkinter import Tk
 
@@ -10,7 +10,7 @@ if platform.system() == "Windows":
     ctypes.windll.shcore.SetProcessDpiAwareness(1)
 
 
-def main():
+def main() -> None:
     """App Entry Point"""
     tk_window: Tk = Tk()
     tk_window.resizable(False, False)
