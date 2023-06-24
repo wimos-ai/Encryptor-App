@@ -1,5 +1,4 @@
 """Module for the main application window"""
-import pickle
 import tkinter.messagebox as mb
 from collections.abc import Mapping
 from tkinter import IntVar, Tk, Toplevel, StringVar, Button, Radiobutton, \
@@ -13,7 +12,7 @@ from cryptography.fernet import InvalidToken
 
 from arrow_icon import ARROW_IMG
 from fernet_encryption import Encryptor
-from internal_key import dump_keys, InternalKey, load_keys
+from internal_key import  InternalKey
 from trash_can_icon import TrashCanImg
 from utils import is_same_file, clear_window, pil_image_to_tkinter_image
 from window_icon import LockImg
@@ -43,7 +42,7 @@ class MainWindowC:
                          message="Cannot Do Encryption Methods on Login File")
             return
         try:
-            Encryptor.encrypt_file(file, self.keys[self.key_choice.get()].fernetKey)
+            Encryptor.encrypt_file(file, self.keys[self.key_choice.get()].fernet_key)
         except FileNotFoundError:
             mb.showerror(title="Encryption Error", message="Failed to get file from user")
             return
@@ -63,7 +62,7 @@ class MainWindowC:
 
         for key in self.keys:
             try:
-                Encryptor.decrypt_file(file, key.fernetKey)
+                Encryptor.decrypt_file(file, key.fernet_key)
                 mb.showinfo(title="Decryption Status",
                             message=f"Decryption of file {file} Successful with key: {key.name}")
                 return
@@ -84,14 +83,8 @@ class MainWindowC:
 
         if file == '':
             return
-        data = Encryptor.encrypt_data(
-            pickle.dumps(self.keys[self.key_choice.get()], protocol=pickle.HIGHEST_PROTOCOL),
-            Encryptor.create_key(password='0')
-        )
         try:
-            with open(file, 'wb') as usr_file:
-
-                usr_file.write(data)
+            InternalKey.dump_key(file, self.keys[self.key_choice.get()], Encryptor.create_key(password='0'))
         except FileNotFoundError:
             mb.showerror(title="Export Error", message=f"File: {file} not found!")
 
@@ -101,19 +94,15 @@ class MainWindowC:
         if file == '':
             return
         try:
-            with open(file, 'rb') as usr_file:
-                contents = usr_file.read()
+            new_key = InternalKey.load_key(file, Encryptor.create_key('0'))
         except FileNotFoundError:
             mb.showerror(title="Key Load Error", message=f"File: {file} not found")
-
-        try:
-            new_key = pickle.loads(
-                Encryptor.decrypt_data(contents, Encryptor.create_key(password='0')))
+            return
         except InvalidToken:
             mb.showerror(title="Key Load Error", message="Could not decode file")
             return
         self.keys.append(new_key)
-        dump_keys(self.user_file, self.keys, self.user_key)
+        InternalKey.dump_keys(self.user_file, self.keys, self.user_key)
         self.display_keys()
 
     def new_random_key_cb(self) -> None:
@@ -136,7 +125,7 @@ class MainWindowC:
             """Confirm key button in the new key sub dialogue"""
             self.keys.append(
                 InternalKey(Encryptor.create_random_key(), key_name.get(), key_description.get()))
-            dump_keys(self.user_file, self.keys, self.user_key)
+            InternalKey.dump_keys(self.user_file, self.keys, self.user_key)
             self.display_keys()
             root.destroy()
 
@@ -166,7 +155,7 @@ class MainWindowC:
             """Confirm key button in create key with password sub menu"""
             key = Encryptor.create_key(password=key_password.get())
             self.keys.append(InternalKey(key, key_name.get(), key_description.get()))
-            dump_keys(self.user_file, self.keys, self.user_key)
+            InternalKey.dump_keys(self.user_file, self.keys, self.user_key)
             self.display_keys()
             root.destroy()
 
@@ -196,7 +185,7 @@ class MainWindowC:
                 new_key = Encryptor.create_key(password=pass_2.get())
                 self.keys[0] = InternalKey(new_key, self.keys[0].name, self.keys[0].description)
                 self.user_key = new_key
-                dump_keys(self.user_file, self.keys, self.user_key)
+                InternalKey.dump_keys(self.user_file, self.keys, self.user_key)
                 root.destroy()
             elif password_one != password_two:
                 mb.showerror(title="Password Change Error", message="Passwords do not match")
@@ -236,7 +225,7 @@ class MainWindowC:
         def delete_cb() -> None:
             """Delete key callback method"""
             self.keys.remove(self.keys[key_edit_idx])
-            dump_keys(self.user_file, self.keys, self.user_key)
+            InternalKey.dump_keys(self.user_file, self.keys, self.user_key)
             self.display_keys()
             root.destroy()
 
@@ -248,9 +237,9 @@ class MainWindowC:
         def confirm_cb() -> None:
             """Confirm button call back"""
             prev = self.keys[key_edit_idx]
-            self.keys[key_edit_idx] = InternalKey(prev.fernetKey, key_name.get(),
+            self.keys[key_edit_idx] = InternalKey(prev.fernet_key, key_name.get(),
                                                   key_description.get())
-            dump_keys(self.user_file, self.keys, self.user_key)
+            InternalKey.dump_keys(self.user_file, self.keys, self.user_key)
             self.display_keys()
             root.destroy()
 
@@ -266,7 +255,7 @@ class MainWindowC:
         self.key_frame = LabelFrame(self.window, text="Keys")
         self.key_frame.pack(fill="both", padx=10, pady=10)
         self.key_frame.configure(bg='gray63')
-        self.keys = load_keys(self.user_file, self.user_key)
+        self.keys = InternalKey.load_keys(self.user_file, self.user_key)
         self.display_keys()
 
         # Init Options Frame
@@ -321,6 +310,7 @@ class MainWindowC:
 
         clear_window(self.key_frame)
 
+        # Header
         Label(self.key_frame, text="#", bg=self.key_frame["background"]).grid(column=1, row=0)
         Label(self.key_frame, text="NAME", bg=self.key_frame["background"]).grid(column=2, row=0)
         Label(self.key_frame, text="DESCRIPTION", bg=self.key_frame["background"]).grid(column=3,
@@ -336,27 +326,22 @@ class MainWindowC:
                 column=0,
                 row=idx + 2)
 
+            # Number
             Label(self.key_frame, text=str(index + 1), bg=self.key_frame["background"]) \
                 .grid(
                 column=1, row=idx + 2, padx=5, sticky="nesw")
-
+            # Name
             Label(self.key_frame, text=key.name, bg=self.key_frame["background"]) \
                 .grid(column=2, row=idx + 2, padx=5, sticky="nesw")
 
+            # Descriptor
             Label(self.key_frame, text=key.description, bg=self.key_frame["background"]) \
                 .grid(column=3, row=idx + 2, padx=5, sticky="nesw")
-            if idx == 0:
-                Label(self.key_frame, text=('*' * 44), bg=self.key_frame["background"]).grid(
-                    column=4, row=idx + 2,
-                    padx=5,
-                    sticky="nesw")
-            else:
-                if isinstance(key.fernetKey, bytes):
-                    txt = str(key.fernetKey)[2:-1]
-                else:
-                    txt = str(key.fernetKey._encryption_key)[2:-1]
-                Label(self.key_frame, text=txt, bg=self.key_frame["background"]) \
-                    .grid(column=4, row=idx + 2, padx=5, sticky="nesw")
+
+            # Key
+            txt = key.get_url_safe_b64_enc_key()
+            Label(self.key_frame, text=txt, bg=self.key_frame["background"]) \
+                .grid(column=4, row=idx + 2, padx=5, sticky="nesw")
 
         def change_page(amount: int) -> None:
             """Change page button callback"""

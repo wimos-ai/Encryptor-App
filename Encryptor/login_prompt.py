@@ -6,7 +6,7 @@ from typing import Any
 from cryptography.fernet import InvalidToken
 
 from fernet_encryption import Encryptor
-from internal_key import InternalKey, load_keys, dump_keys
+from internal_key import InternalKey
 from main_window import MainWindowC
 from utils import center_window
 from utils import clear_window, pil_image_to_tkinter_image, quit_handler
@@ -68,7 +68,7 @@ class CreateLoginScreen:
             write_key = InternalKey(usr_key, "Password Key", "The Key Generated from your password")
             keys = [write_key]
             main_db_file = username + '.db'
-            dump_keys(main_db_file, keys, usr_key)
+            InternalKey.dump_keys(main_db_file, keys, usr_key)
             self.parent_window.draw()
         elif password_one != password_two:
             mb.showerror(title="New Account Error", message="Passwords do not match")
@@ -139,7 +139,7 @@ class LoginScreen:
         try:
             user_key = Encryptor.create_key(password=password)
             main_file = user_name + '.db'
-            keys = load_keys(main_file, user_key)
+            keys = InternalKey.load_keys(main_file, user_key)
             MainWindowC(self.window, main_file, user_key, keys).draw()
         except FileNotFoundError:
             mb.showerror(title="Login Message", message="User not found")
