@@ -26,15 +26,7 @@ class Encryptor:
     @staticmethod
     def create_random_key() -> Fernet:
         """Creates a random Fernet key"""
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3",
-            iterations=600001,
-        )
-        bts = os.urandom(32)
-        key = base64.urlsafe_b64encode(kdf.derive(bts))
-        return Fernet(key)
+        return Fernet(Fernet.generate_key())
 
     @staticmethod
     def write_key(file_name: str, key: bytes, enc_key: Fernet) -> None:
