@@ -17,7 +17,7 @@ class Encryptor:
             algorithm=hashes.SHA256(),
             length=32,
             salt=b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3",
-            iterations=390000,
+            iterations=600001,
         )
 
         key = base64.urlsafe_b64encode(kdf.derive(password.encode("UTF-8")))
@@ -30,7 +30,7 @@ class Encryptor:
             algorithm=hashes.SHA256(),
             length=32,
             salt=b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3",
-            iterations=390000,
+            iterations=600001,
         )
         bts = os.urandom(32)
         key = base64.urlsafe_b64encode(kdf.derive(bts))
@@ -67,8 +67,7 @@ class Encryptor:
             contents = file.read()
 
         with open(file_path, 'wb') as file:
-            k = key
-            file.write(k.encrypt(contents))
+            file.write(key.encrypt(contents))
 
     @staticmethod
     def decrypt_file(file_path: str, key: Fernet) -> None:

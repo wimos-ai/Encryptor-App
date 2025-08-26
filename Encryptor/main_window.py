@@ -37,6 +37,9 @@ class MainWindowC:
         """Call back for encrypt file option"""
         file: str = askopenfilename()
 
+        if not file:
+            return
+
         if is_same_file(file, self.user_file):
             mb.showerror(title="Encryption Error",
                          message="Cannot Do Encryption Methods on Login File")
@@ -52,7 +55,7 @@ class MainWindowC:
         """Call back for decrypt file option"""
         file = askopenfilename()
 
-        if file == '':
+        if not file:
             return
 
         if is_same_file(file, self.user_file):
@@ -91,7 +94,7 @@ class MainWindowC:
     def load_key_cb(self) -> None:
         """call back for load key button"""
         file = askopenfilename()
-        if file == '':
+        if not file:
             return
         try:
             new_key = InternalKey.load_key(file, Encryptor.create_key('0'))

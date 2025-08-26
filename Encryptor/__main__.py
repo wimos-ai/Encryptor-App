@@ -6,7 +6,6 @@ from login_prompt import LoginScreen
 
 if platform.system() == "Windows":
     import ctypes
-
     ctypes.windll.shcore.SetProcessDpiAwareness(1)
 
 

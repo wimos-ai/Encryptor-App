@@ -36,11 +36,11 @@ class CreateLoginScreen:
 
         # Password Row 1
         Label(self.window, text="Password").grid(row=1, column=0)
-        Entry(self.window, textvariable=self.password1).grid(row=1, column=1)
+        Entry(self.window, textvariable=self.password1, show="*").grid(row=1, column=1)
 
         # Password Row 2
         Label(self.window, text="Confirm Password").grid(row=2, column=0)
-        Entry(self.window, textvariable=self.password2).grid(row=2, column=1)
+        Entry(self.window, textvariable=self.password2, show="*").grid(row=2, column=1)
 
         # Create User Button
         Button(self.window, text='Create New User',

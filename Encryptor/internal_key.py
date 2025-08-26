@@ -30,13 +30,13 @@ class InternalKey:
         def default(self, o: Any) -> Any:
             if isinstance(o, InternalKey):
                 fernet_bytes: bytes = o.fernet_key._signing_key + o.fernet_key._encryption_key
-                fernet_bytes = base64.urlsafe_b64encode(fernet_bytes).decode("ASCII")
-                return [fernet_bytes, o.name, o.description]
+                fernet_str = base64.urlsafe_b64encode(fernet_bytes).decode("ASCII")
+                return (fernet_str, o.name, o.description)
             else:
                 return json.JSONEncoder.default(self, o)
 
     @staticmethod
-    def _from_json_list(raw_json_list: list[str, str, str]) -> InternalKey:
+    def _from_json_list(raw_json_list: list[str]) -> InternalKey:
         return InternalKey(Fernet(raw_json_list[0]), raw_json_list[1], raw_json_list[2])
 
     @staticmethod
@@ -52,7 +52,7 @@ class InternalKey:
         """Loads a key list from file"""
         with open(file_path, 'rb') as file:
             contents = file.read()
-        keys: list[list[str, str, str]] = json.loads(Encryptor.decrypt_data(contents, decryption_key).decode("UTF-8"))
+        keys: list[list[str]] = json.loads(Encryptor.decrypt_data(contents, decryption_key).decode("UTF-8"))
         return [InternalKey._from_json_list(key) for key in keys]
 
     @staticmethod
