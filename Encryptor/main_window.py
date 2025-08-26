@@ -87,7 +87,7 @@ class MainWindowC:
         if file == '':
             return
         try:
-            InternalKey.dump_key(file, self.keys[self.key_choice.get()], Encryptor.create_key(password='0'))
+            InternalKey.dump_key(file, self.keys[self.key_choice.get()], Encryptor.create_key(password='0', salt=Encryptor.DEFAULT_SALT))
         except FileNotFoundError:
             mb.showerror(title="Export Error", message=f"File: {file} not found!")
 
@@ -97,7 +97,7 @@ class MainWindowC:
         if not file:
             return
         try:
-            new_key = InternalKey.load_key(file, Encryptor.create_key('0'))
+            new_key = InternalKey.load_key(file, Encryptor.create_key('0', salt=Encryptor.DEFAULT_SALT))
         except FileNotFoundError:
             mb.showerror(title="Key Load Error", message=f"File: {file} not found")
             return
@@ -156,7 +156,7 @@ class MainWindowC:
 
         def confirm_key() -> None:
             """Confirm key button in create key with password sub menu"""
-            key = Encryptor.create_key(password=key_password.get())
+            key = Encryptor.create_key(password=key_password.get(), salt=Encryptor.DEFAULT_SALT)
             self.keys.append(InternalKey(key, key_name.get(), key_description.get()))
             InternalKey.dump_keys(self.user_file, self.keys, self.user_key)
             self.display_keys()
@@ -185,7 +185,7 @@ class MainWindowC:
             password_one = pass_1.get()
             password_two = pass_2.get()
             if password_one == password_two and len(password_one) >= 4:
-                new_key = Encryptor.create_key(password=pass_2.get())
+                new_key = Encryptor.create_key(password=pass_2.get(), salt=Encryptor.DEFAULT_SALT)
                 self.keys[0] = InternalKey(new_key, self.keys[0].name, self.keys[0].description)
                 self.user_key = new_key
                 InternalKey.dump_keys(self.user_file, self.keys, self.user_key)

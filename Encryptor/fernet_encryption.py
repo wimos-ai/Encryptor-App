@@ -1,6 +1,7 @@
 """Module for encryption functions based on cryptography"""
 import base64
 import os
+from typing import Final
 
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
@@ -10,13 +11,19 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 class Encryptor:
     """Exposes some convenient methods working with Fernet objects"""
 
+    DEFAULT_SALT:Final[bytes] = b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3"
+
     @staticmethod
-    def create_key(password: str) -> Fernet:
+    def create_key(password: str, salt:bytes | None = None) -> Fernet:
         """Creates a Fernet key from password"""
+
+        if salt is None:
+            salt = os.urandom(16)
+
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
-            salt=b"}'x\x08\xab\t\xf5Ik,\xc3\xf4i\xf4\xc4\xe3",
+            salt=salt,
             iterations=600001,
         )
 

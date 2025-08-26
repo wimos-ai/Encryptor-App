@@ -64,7 +64,7 @@ class CreateLoginScreen:
         password_two = self.password2.get()
         username = self.user_name.get()
         if password_one == password_two and len(password_one) > 3:
-            usr_key = Encryptor.create_key(password=password_one)
+            usr_key = Encryptor.create_key(password=password_one, salt=Encryptor.DEFAULT_SALT)
             write_key = InternalKey(usr_key, "Password Key", "The Key Generated from your password")
             keys = [write_key]
             main_db_file = username + '.db'
@@ -137,7 +137,7 @@ class LoginScreen:
         password = self.password.get()
         user_name = self.user_name.get()
         try:
-            user_key = Encryptor.create_key(password=password)
+            user_key = Encryptor.create_key(password=password, salt=Encryptor.DEFAULT_SALT)
             main_file = user_name + '.db'
             keys = InternalKey.load_keys(main_file, user_key)
             MainWindowC(self.window, main_file, user_key, keys).draw()
